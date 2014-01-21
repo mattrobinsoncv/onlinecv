@@ -1,544 +1,472 @@
 
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Matt Robinson's CV using Bootstrap 101 Template</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <link href='http://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
+<script>
+var halfScreen = 0;
+var scrollHook = 'html';
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-    <style>
-      /* GLOBAL STYLES - carousel.css
--------------------------------------------------- */
-/* Padding below the footer and lighter body text */
+console.log(navigator.userAgent);
+if (navigator.userAgent.match(/chrome/i)){
+  var scrollHook = 'body';
+}
+$(document).ready(function(){
+  var profile = new negativeMover('#profilePic', $('#profilePic').css('left'), 800, 100, 800, 'left', 2, 100);
+  negativeMover(profile);
+  var nav = new negativeMover('nav', $('nav').css('top'), 5, 1, 200, 'top', 1, 50);
+  var header = new negativeMover('header', $('header').css('height'), 100, 1, 400, 'height', -1, 50);
+  var flatColour = new positiveMover('#flatColour', $('#flatColour').css('height'), 100, 1, 400, 'height', -1, 50);
+  console.log('**'+$('#profilePic').css('left')+'**'+$('nav').css('top'));
+  var direction = '+';
+  var scrollTrack = 0;
+  var moveAmount = 0;
+  var docLength = $(window).height();
+  var scrollAmount = docLength * 0.3;
+  console.log(docLength+'+'+scrollAmount);
+  
+  $(function() {  // taken from http://css-tricks.com/snippets/jquery/smooth-scrolling/
+    $('a[href*=#]:not([href=#])').click(function() {
+      if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+        var target = $(this.hash);
+        target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+        if (target.length) {
+          $('html,body').animate({
+            scrollTop: target.offset().top
+          }, 1000);
+          return false;
+        }
+      }
+    });
+  });
 
-body {
-  padding-bottom: 40px;
-  color: #5a5a5a;
+  $(document).on('scroll', function(event){
+    //event.preventDefault();
+    //event.stopPropagation();
+		direction = ($(scrollHook).scrollTop() > scrollTrack) ? '-' : '+';
+		opposite = (direction == '+') ? '-' : '+';
+		//console.log($(scrollHook).scrollTop()+" = "+direction+" : "+opposite+" ~ "+scrollHook);
+    moveAmount = (direction == '-') ? $(scrollHook).scrollTop() - scrollAmount : $(scrollHook).scrollTop() + scrollAmount;
+    console.log(direction+'=='+scrollAmount+'/'+moveAmount);
+    //moveAmount = scrollAmount/docLength * 100;
+    //console.log(scrollTrack +'><'+ $(scrollHook).scrollTop()+"="+scrollAmount+"/"+moveAmount);
+		//(direction, scrollTrack);	
+    //header.move(opposite, scrollAmount);
+    /*
+    if((direction == '-') && ($(scrollHook).scrollTop() >= header.triggerStart)){
+      moveObject(header, opposite, scrollAmount);
+    }
+    if(($('header').height() <= 100)&&(!$('#nav').hasClass('minimised'))){ $('#nav').addClass('minimised') }
+    */
+    //flatColour.move(direction, scrollAmount);
+    /*
+    if(((direction == '-') && ($(scrollHook).scrollTop() >= nav.triggerStart))||((direction == '+') && ($(scrollHook).scrollTop() <= nav.triggerEnd))){
+      moveObject(nav, direction, scrollAmount);
+    } 
+    */
+    //header.move(opposite, moveAmount, scrollTrack);
+    //flatColour.move(opposite, moveAmount, scrollTrack);
+    //nav.move(direction, moveAmount, scrollTrack);
+    if(direction == '-'){
+      profile.move(direction, moveAmount, scrollTrack);
+    }else{
+      profile.move(direction, moveAmount, scrollTrack);
+    }
+    /*
+    if(((direction == '-') && ($(scrollHook).scrollTop() >= profile.triggerStart))||((direction == '+') && ($(scrollHook).scrollTop() <= profile.triggerEnd))){
+      moveObject(profile, direction, scrollAmount);
+    } 
+    */
+    //$(window).scrollTop(scrollTrack+moveAmount);
+		scrollTrack =  $(scrollHook).scrollTop();
+	});  
+}); 
+
+function positiveMover(id, start, finish, triggerStart, triggerEnd, axis, speed, step){
+	this.id = id;
+	this.start = start;
+	this.finish = finish;
+  this.triggerStart = triggerStart;
+	this.triggerEnd = triggerEnd;    
+	this.axis = axis;
+	this.speed = speed;
+	this.step = step;
+  this.move = function(direction, scrollAmount, scrollTrack){
+    console.log(direction+'|'+scrollTrack+'::'+this.triggerStart+'/'+this.triggerEnd);
+    if(((direction == '-')&&(scrollTrack >= this.triggerStart))||((direction == '+')&&(scrollTrack <= this.triggerEnd))){
+      var theLocation = $(this.id).css(this.axis);
+      theLocation = theLocation.substring(0, theLocation.length - 2);
+    	//var go = (direction == '-') ? (theLocation > this.finish) : (theLocation < this.start);
+      var go = false;
+      if(direction == '-'){
+        if(theLocation <= this.finish){
+          go = true;
+          if(theLocation+scrollAmount > this.finish){
+            scrollAmount = this.finish - theLocation;
+          }
+        }
+      }else{ // direction == +
+        if(theLocation >= this.start){
+          go = true;
+          if(theLocation-scrollAmount < this.start){
+            scrollAmount = theLocation - this.start;
+          } 
+        }
+      }
+    	console.log(this.id+go+':'+theLocation+'~'+this.start+':'+this.finish+'-'+this.axis+'>'+direction);
+    	if(go){
+    		var command = {};
+    		command[this.axis] = direction+'='+this.speed*scrollAmount+'px';
+    		$(this.id).stop().animate(command, this.step,"linear"); 
+    	}  
+    }
+  }
 }
 
-a { color: #8D0428; font-weight: bold; }
-a:hover { color: #b4d455; }
-.pull-left a { font-size: 28px; }
-h1 { 
-  font-family: 'Raleway', sans-serif;
-color: #8D0428;
-text-align: left;
-font-weight: bolder;
-text-indent: 5rem;
--webkit-transform-origin: 0 0;
+function negativeMover(id, start, finish, triggerStart, triggerEnd, axis, speed, step){
+  this.id = id;
+	this.start = start;
+	this.finish = finish;
+  this.triggerStart = triggerStart;
+	this.triggerEnd = triggerEnd;    
+	this.axis = axis;
+	this.speed = speed;
+	this.step = step;
+  this.move = function(direction, scrollAmount, scrollTrack){
+    console.log(direction+'|'+scrollTrack+'::'+this.triggerStart+'/'+this.triggerEnd);
+    if(((direction == '-')&&(scrollTrack <= this.triggerStart))||((direction == '+')&&(scrollTrack >= this.triggerEnd))){
+      var theLocation = $(this.id).css(this.axis);
+      theLocation = theLocation.substring(0, theLocation.length - 2);
+    	//var go = (direction == '-') ? (theLocation > this.finish) : (theLocation < this.start);
+      var go = false;
+      if(direction == '-'){
+        if(theLocation >= this.finish){
+          go = true;
+          if(theLocation+scrollAmount > this.finish){
+            scrollAmount = this.finish - theLocation;
+          }
+        }
+      }else{ // direction == +
+        if(theLocation <= this.start){
+          go = true;
+          if(theLocation-scrollAmount < this.start){
+            scrollAmount = theLocation - this.start;
+          } 
+        }
+      }
+    	console.log(this.id+go+':'+theLocation+'~'+this.start+':'+this.finish+'-'+this.axis+'>'+direction);
+    	if(go){
+    		var command = {};
+    		command[this.axis] = direction+'='+this.speed*scrollAmount+'px';
+    		$(this.id).stop().animate(command, this.step,"linear"); 
+    	}  
+    }
+  }  
+}
+
+function moveObject(theObject, direction, scrollAmount){
+	var theLocation = $(theObject.id).css(theObject.axis);
+	theLocation = theLocation.substring(0, theLocation.length - 2);
+	var go = (direction == '-') ? (theLocation > theObject.finish) : (theLocation < theObject.start);
+  if(direction == '-'){
+    if(theLocation > theObject.finish){
+      console.log(theLocation+' > '+theObject.finish);
+    }
+  }
+	console.log(theObject.id+go+':'+theLocation+'~'+theObject.finish+'-'+theObject.axis+'>'+direction);
+	if(go){
+		var command = {};
+		command[theObject.axis] = direction+'='+theObject.speed*scrollAmount+'px';
+		$(theObject.id).stop().animate(command, theObject.step,"linear"); 
+	}
+}
+</script>
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+<style>
+/**
+ * html5doctor.com Reset Stylesheet v1.6.1 (http://html5doctor.com/html-5-reset-stylesheet/)
+ * Richard Clark (http://richclarkdesign.com)
+ * http://cssreset.com
+ */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+    margin:0;
+    padding:0;
+    border:0;
+    outline:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+body {
+    line-height:2.25rem;
+    font-size: 2rem;
+}
+article,aside,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section {
+    display:block;
+}
+nav ul {
+    list-style:none;
+    margin: .25rem 1rem 1rem 1rem;
+}
+blockquote, q {
+    quotes:none;
+}
+a {
+    margin:0;
+    padding:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+/* change colours to suit your needs */
+ins {
+    background-color:#ff9;
+    color:#000;
+    text-decoration:none;
+}
+/* change colours to suit your needs */
+mark {
+    background-color:#ff9;
+    color:#000;
+    font-style:italic;
+    font-weight:bold;
+}
+del {
+    text-decoration: line-through;
+}
+abbr[title], dfn[title] {
+    border-bottom:1px dotted;
+    cursor:help;
+}
+/* change border colour to suit your needs */
+hr {
+    display:block;
+    height:1px;
+    border:0;
+    border-top:1px solid #cccccc;
+    margin:1em 0;
+    padding:0;
+}
+
+/*	body { min-height: 2000px; background: url(background.jpg) center 10% no-repeat fixed; background-position:fixed; background-size: 100% 50%; font-size: 0; margin-top: 0; padding: 0 } */
+  html { font-size: 100%; }
+	section { padding: 5%  30%; background: white; font-size: 1.5rem; background-clip: padding-box; min-height: 50%; }
+	section:nth-child(odd) { background-color: #ccc; }
+	.big { font-size: 3rem }
+	.medium { font-size: 2rem; opacity: .8}
+	.small { font-size: 1rem; opacity: .6 }
+	header { position: fixed; z-index: 2; top: 0; left: 0; width: 100%; height: 50%; max-height: 50%; min-height: 10%; background: url(http://mattrobinsoncv.neocities.org/background.jpg); background-size: cover; border-bottom: 2px solid rgb(186, 247, 8); box-shadow: 0 1px #b4d455;}
+  #flatColour { background-color: yellowgreen; opacity: 0; width: 100%; height: 100%;}
+  #pattern { background : url(background.jpg); background-size: cover; } 
+  nav { text-align: center; width: 75%; top: 25%; left:10%; z-index: 4; position: fixed;}
+  nav ul li { display: inline-block; padding: 1rem; border: 1px gray solid; border-radius: .5rem; margin: 1rem; font-size: 1rem;}
+  #profilePic { position: fixed; top: 20%; left: 110%; z-index: 5;}
+  footer { min-height: 10rem; background-color: #ccdf9b; border-top: 2px solid rgb(186, 247, 8); box-shadow: 0 -1px #b4d455;}
+  h1, h2, h3 { font-family: 'Raleway', sans-serif; color: #7a0b28; padding: .5rem;}
+  h1 { font-size: 3rem }
+  section h1 { -webkit-transform-origin: 0 0;
 -moz-transform-origin: 0 0;
 -ms-transform-origin: 0 0;
 -o-transform-origin: 0 0;
 -webkit-transform: rotate(90deg);
 -moz-transform: rotate(90deg);
 -ms-transform: rotate(90deg);
--o-transform: rotate(90deg);
-}
-
-h2 { font-size: 26px; }
-
-h1, h2 { padding: 1rem; }
-/* CUSTOMIZE THE NAVBAR
--------------------------------------------------- */
-
-/* Special class on .container surrounding .navbar, used for positioning it into place. */
-.navbar-wrapper {
-  background: url(http://mattrobinsoncv.neocities.org/background.jpg) no-repeat;
-  background-size: cover;
-}
-
-/* Flip around the padding for proper display in narrow viewports */
-.navbar-wrapper .container {
-  padding-left: 0;
-  padding-right: 0;
-}
-.navbar-wrapper .navbar {
-  padding-left: 15px;
-  padding-right: 15px;
-  margin: 10px auto;
-}
-
-
-/* CUSTOMIZE THE CAROUSEL
--------------------------------------------------- */
-
-/* Carousel base class */
-.carousel {
-  height: 500px;
-  margin-bottom: 60px;
-  border-bottom: 2px solid rgb(186, 247, 8);
-  box-shadow: 0 1px #b4d455;
-}
-/* Since positioning the image, we need to help out the caption */
-.carousel-caption {
-  z-index: 10;
-  min-height: 90%;
-}
-
-/* Declare heights because of positioning of img element */
-.carousel .item {
-  height: 500px;
-  background-color: #b4d455;
-}
-
-.carousel .item::after {
-  content: "";
-  background: url(http://mattrobinsoncv.neocities.org/background.jpg);
-  background-size: cover;
-  opacity: 0.5;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  position: absolute;
-  z-index: -1;   
-}
-.carousel-inner > .item > img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  min-width: 100%;
-  height: 500px;
-}
-
-
-
-/* MARKETING CONTENT
--------------------------------------------------- */
-
-/* Pad the edges of the mobile views a bit */
-.marketing {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-/* Center align the text within the three columns below the carousel */
-.marketing .col-lg-4 {
-  text-align: center; 
-  margin-bottom: 20px;
-}
-.marketing h2 {
-  font-weight: normal;
-  text-align: left;
-}
-.marketing .col-lg-4 p {
-  margin-left: 10px;
-  margin-right: 10px;
-  text-align: left;
-}
-
-.marketing .col-lg-4 ul {
-  text-align: left;  
-}
-
-/* Featurettes
-------------------------- */
-
-.featurette-divider {
-  margin: 80px 0 20px; /* Space out the Bootstrap <hr> more */
-  border-bottom: 2px solid rgb(186, 247, 8);
-  box-shadow: 0 1px #b4d455;
-}
-
-/* Thin out the marketing headings */
-.featurette-heading {
-  font-weight: 300;
-  line-height: 1;
-  letter-spacing: -1px;
-}
-
-
-
-/* RESPONSIVE CSS
--------------------------------------------------- */
-
-@media (min-width: 768px) {
-
-  /* Remove the edge padding needed for mobile */
-  .marketing {
-    padding-left: 0;
-    padding-right: 0;
+-o-transform: rotate(90deg);}
+  p { padding: 1rem;}
+  #postHeader { margin-top: 15%; background-color: #fff; min-height: 50%; padding-top: 10%;}
+  hr { margin-top: 15%; width: 75%; border-top: 3px inset #b4d455; text-align: center; margin: 0 auto; }
+  hr ~ p { padding-top: 10%; padding-bottom: 15%; text-align: center; font-family: 'Raleway', sans-serif; color: #7a0b28;}
+  ul { margin: 1rem; }
+  li { list-style-type: none; border-bottom: 1px dotted #ccc; font-size: 1.25rem; padding: .25rem; }
+  #nav ul {
+    display: block;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    -webkit-padding-start: 40px;
   }
 
-  /* Navbar positioning foo */
-  .navbar-wrapper {
-    background: url(http://mattrobinsoncv.neocities.org/background.jpg) no-repeat;
-    background-size: cover;
-  }
-  .navbar-wrapper .container {
-    padding-left:  15px;
-    padding-right: 15px;
-  }
-  .navbar-wrapper .navbar {
-    padding-left:  0;
-    padding-right: 0;
+  #nav li {
+    position: relative;
+    display: inline-block;
+    margin-right: -4px;
+    border: none;
   }
 
-  /* The navbar becomes detached from the top, so we round the corners */
-  .navbar-wrapper .navbar {
-    border-radius: 4px;
+  #nav a {
+    display: block;
+    background-color: #f7f7f7;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#f7f7f7), to(#e7e7e7));
+    background-image: -webkit-linear-gradient(top, #f7f7f7, #e7e7e7);
+    background-image: -moz-linear-gradient(top, #f7f7f7, #e7e7e7);
+    background-image: -ms-linear-gradient(top, #f7f7f7, #e7e7e7);
+    background-image: -o-linear-gradient(top, #f7f7f7, #e7e7e7);
+    margin: .5rem;
+    width: 7rem;
+    height: 7rem;
+    position: relative;
+    text-align: center;
+    line-height: 7rem;
+    border-radius: 50%;
+    box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
+    font-weight: bolder;
   }
-
-  /* Bump up size of carousel content */
-  .carousel-caption p {
-    margin-bottom: 20px;
-    font-size: 21px;
-    line-height: 1.4;
-    height: 90%;
-    padding: 0 1rem;
+  
+  #nav.minimised {
+    margin-top: 0;
+    top: .5rem;
   }
-
-  .featurette-heading {
-    font-size: 50px;
+  #nav.minimised a {
+    height: 3rem;
+    line-height: 3;
   }
- 
- .carousel-caption ul {
-   text-align: left;
-   font-size: 20px;
- }
- 
- .carousel-caption ul ul {
-   text-align: left;
-   font-size: 18px;
- } 
- #profilePic { float: right; }
- 
- .carousel-caption p { float: left; width: 75%; text-align: left };
- 
-}
-
-@media (min-width: 992px) {
-  .featurette-heading {
-    margin-top: 120px;
+  
   }
-}
+  [class*="icon-"] {
+    font-style: normal;
+    font-size: 2em;
+    speak: none;
+  }
+  a {
+    text-decoration: none;
+    font-family: 'Raleway', sans-serif; color: #7a0b28;
+  }  
+  a:hover {
+    text-decoration: none;
+    color: #b4d455;
+    text-shadow:1px 0px 1px rgb(186, 247, 8);
+  } 
+  </style>
+</head>
+<body>
+<header>
+  <div id="pattern">
+    <div id="flatColour"><h1>Matt Robinson's Online CV</h1></div>
+  </div>
+</header>
+<div id="postHeader">
+  <nav>
+    <ul id="nav">
+      <li><a href="#intro">Intro</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#education">Education</a></li>
+    </ul>
+  </nav>
+  <hr />
+  <p>Use the nav buttons...until I fix the scroll</p>
+</div>
+<img id="profilePic" src="https://en.gravatar.com/userimage/52621064/a7dcd5cdaf4c859e5e187869719ec822.png?size=200" title="How you doing?">
+<section id="intro">
+	<h1>Introduction</h1>
+	<p>A dedicated and professional Internet Developer/Technical Consultant with extensive experience in development & technical support for a wide range of products and on a variety of platforms, including mobile. Technical nous & creative thinking. Demonstrated adaptability and maturity having lived overseas and being able to work across boundaries. Experience enhanced by strong communication skills and customer orientation. Always prepared to learn and take on new challenges.</p>
+</section>
 
-footer {
-  background: url(http://mattrobinsoncv.neocities.org/background.jpg);
-  background-position: cover;
-  padding: 5rem;
-  border-top: 2px solid rgb(186, 247, 8);
-  border-bottom: 2px solid rgb(186, 247, 8);
-  box-shadow: 0 1px #b4d455;
-  margin-top: 40px;
-}
+<section id="skills">
+	<h1>Skill Summary</h1>
+	<ul>
+		<li>WCM developer in migration project from WCM6 to WCM7</li>
+		<li>Technical lead of WCM CMS responsible for delivery and integration of content into nationwide website</li>    
+		<li>Developed mobile integration solutions for  NAB’s Mobile Internet Banking apps</li>
+		<li>Managed members of the Content Team integrating mobile solutions - Serving content to multiple devices (Desktop, Tablet, iPhone, Android)</li>
+		<li>Extended functionality of website</li>
+		<li>Cross Platform integration (Mobile, Internet Banking)</li>
+		<li>Site wide form usability updates, Product selector guides and wizards</li>
+		<li>Switch helper letter generator tool (mentioned in Forster report)</li>
+		<li>Identified and drove a number of initiatives to streamline and enhance existing procedure</li>
+		<li>Investigate & advise on new technical directions</li>
+		<li>Developed the front-end of the first generation NAB mobile banking solution</li>
+	</ul>
+  <a href="#intro">Return to the top</a>
+</section>
 
-.navbar-inverse {
-background-image: linear-gradient(to bottom,#999292 0,#575555 100%);
-}
-
-#bootstrapLogo {
-  height: 50px;
-  width: 50px;
-  margin-top: 10px;
-}
-
-#bootstrapLink, #bootstrapLink:hover { 
-  font-size: 14px;
-  color: #5a5a5a;
-}
-    </style>
-  </head>
- <body>
-    <div class="navbar-wrapper" id="top">
-      <div class="container">
-
-        <div class="navbar navbar-inverse navbar-static-top" role="navigation">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="http://mattrobinsoncv.wordpress.com/">Matt Robinson's CV</a>
-            </div>
-            <div class="navbar-collapse collapse">
-              <ul class="nav navbar-nav">
-                <li data-target="#myCarousel" data-slide-to="0" class="active"><a href="#">Intro</a></li>
-                <li data-target="#myCarousel" data-slide-to="1"><a href="#">Skills</a></li>
-                <li data-target="#myCarousel" data-slide-to="2"><a href="#">More Skills</a></li>
-                <li data-target="#myCarousel" data-slide-to="3"><a href="#">Achievements</a></li>
-                <li><a href="#career">Career</a></li>
-                <li><a href="#training">Training</a></li>
-                <!-- li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#">Underpants Gnomes</a></li>
-                    <li><a href="#">3 for the day</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li class="divider"></li>
-                    <li class="dropdown-header">Nav header</li>
-                    <li><a href="#">Separated link</a></li>
-                    <li><a href="#">One more separated link</a></li>
-                  </ul>
-                </li -->
-              </ul>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
+<section id="work">
+	<h1>Career</h1>
+	<h2>Mid 2012 – Present   Web Developer – ANZ – Melbourne</h2>
+	<p>My current role is  a front-end developer in the Online Releases team.  I have worked on the ANZ cross device mobile web site and online chat pilot.  Presently working on the major CMS upgrade project where my experience in WCM dev is being utilised.</p>
 
 
-    <!-- Carousel
-    ================================================== -->
-    <div id="myCarousel" class="carousel slide" data-ride="carousel">
-      <!-- Indicators -->
-      <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-        <li data-target="#myCarousel" data-slide-to="3"></li>
-      </ol>
-      <div class="carousel-inner">
-        <div class="item active" id="introduction">
-          <!-- img data-src="holder.js/900x500/auto/#777:#7a7a7a/text:First slide" alt="First slide" 
-          <img src="background.jpg" width="900" height="500" alt="First slide" -->
-          <div class="container">
-            <div class="carousel-caption">
-                <h1>INTRODUCTION</h1>
-                <p>A dedicated and professional Internet Developer/Technical Consultant with extensive experience in development & technical support for a wide range of products and on a variety of platforms, including mobile. Technical nous & creative thinking. Demonstrated adaptability and maturity having lived overseas and being able to work across boundaries. Experience enhanced by strong communication skills and customer orientation. Always prepared to learn and take on new challenges.</p>
-                <img id="profilePic" src="https://en.gravatar.com/userimage/52621064/a7dcd5cdaf4c859e5e187869719ec822.png?size=200" title="How you doing?">
-            </div>
-          </div>
-        </div>
-        <div class="item" id="skills">
-          <!-- img data-src="holder.js/900x500/auto/#666:#6a6a6a/text:Second slide" alt="Second slide" 
-          <img src="background.jpg" width="900" height="500" alt="Second slide" -->
-          <div class="container">
-            <div class="carousel-caption">
-              <h1>SKILLS</h1>
-              <ul>
-                <li>5 years experience in Web Development
-                  <ul>
-                    <li>HTML5</li>
-                    <li>CSS3</li>
-                    <li>Javascript</li>
-                    <li>Frameworks : JQuery, JQuery Mobile, JQuery UI, Zepto</li>
-                  </ul>
-                </li>
-                <li>Content Management Systems
-                  <ul>
-                    <li>Websphere WCM 6/7</li>
-                    <li>Wordpress</li>
-                    <li>Pirhana - bespoke (PHP)</li>
-                  </ul>
-                </li>
-                <li>Mobile web development, responsive design</li>
-                <li>eCommerce, forms, wizards, AJAX</li>                
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="item">
-          <!-- img data-src="holder.js/900x500/auto/#666:#6a6a6a/text:Second slide" alt="Second slide" 
-          <img src="background.jpg" width="900" height="500" alt="Second slide" -->
-          <div class="container">
-            <div class="carousel-caption">
-              <h1>SKILLS</h1>
-              <ul>
-                <li>Corporate experience 
-                  <ul>
-                    <li>Process navigation</li>
-                    <li>Vendor management</li>
-                    <li>Project Delivery</li>
-                    <li>Team Lead</li>
-                  </ul>
-                </li>  
-                <li>Operating systems
-                  <ul>
-                    <li>UNIX/Linux</li>
-                    <li>Mac OS X</li>
-                    <li>Windows Servers</li>
-                    <li>Chrome OS</li>
-                  </ul>
-                </li>
-                <li>Source control - SVN/Github</li>
-              </ul>
-            </div>
-          </div>
-        </div>        
-        <div class="item" id="achievements">
-          <!-- img data-src="holder.js/900x500/auto/#555:#5a5a5a/text:Third slide" alt="Third slide"
-          <img src="background.jpg" width="900" height="500" alt="Third slide" -->
-          <div class="container">
-            <div class="carousel-caption">
-              <h1>ACHIEVEMENTS</h1>
-                <ul>
-                  <li>WCM developer in migration project from WCM6 to WCM7</li>
-                  <li>Pinch hit issues with ANZ mobile website and Live Chat offering</li>
-                  <li>Technical lead of WCM CMS responsible for delivery and integration of content into nationwide website</li>
-                  <li>Developed mobile integration solutions for  NAB’s Mobile Internet Banking apps</li>
-                  <li>Managed members of the Content Team integrating mobile solutions - Serving content to multiple devices (Desktop, Tablet, iPhone, Android)</li>
-                  <li>Managed site wide form usability updates, Product selector guides and wizards</li>
-                  <li>Identified and drove a number of initiatives to streamline and enhance existing procedure</li>
-                  <li>Investigate & advise on new technical directions</li>
-                </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
-      <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
-    </div><!-- /.carousel -->
+	<h2>Mid 2009 – Mid 2012   Web Developer – NAB – Melbourne</h2>
+	<p>Technical lead for the Digital Content Team, which created and implemented content for the nab websites. Specifically I developed complex tools and extended functionality using front-end loaded (javascript and CMS specific coding) solutions in a heavy volume, performance sensitive environment.  This requires cross team coordination, closely following procedure, creative work arounds, and initiative.  Other duties included prototyping and new technology investigation. There is a lot of cross platform and Mobile integration in my work, including leading a small team of developers implementing solutions I’ve devised. I also dabbled in process mapping and improvement as I come across problems.</p>
+	<ul>
+	  <li>Front-end development – jQuery/AJAX/HTML5/CSS3</li>
+	  <li>Mobile web development & integration</li>
+	  <li>Technology update research & advising</li>
+	  <li>Delivery management of projects</li>
+	  <li>Solution development from business requirements</li>
+	  <li>IBM Websphere (WCM) Content management (CMS)</li>
+	  <li>Technical Lead (trouble shooting)</li>
+	  <li>Wordpress (CMS) customisation of theme templates</li>
+	</ul>
+	
+	<h2>2008 – 2009   Web Developer – Fatfish – Melbourne</h2>
+	<ul>
+	  <li>End to end website (CMS) development</li>
+	  <li>PHP</li>
+	  <li>Coldfusion</li>
+	  <li>HTML</li>
+	  <li>CSS</li>
+	  <li>Javascript</li>
+	  <li>MySQL</li>
+	</ul>
+	
+	<h2>2006 – 2008   Data Operator – Computershare – Melbourne</h2>
+	<ul>  
+	  <li>Part time work to cover the gap in Austudy</li>
+	</ul>
+	<h2>2004 – 2006    Various whilst travelling Europe</h2>
+	<ul>
+	  <li>Like many young Australians, travelled to London and worked in a pub, using the UK as a base to travel around Europe.  Also spent 3 months working in Greece.  Once the money ran out, returned home to re-skill and get a real job again.</li>
+	</ul>
 
+	<h2>1997 - 2003 Senior Technical Consultant – Mentis Technologies  - Australia</h2>
+	<ul>
+	  <li>Started as an IT Trainee in 1997. Promoted to Technical Support leader 6 months after.</li>
+	  <li>COBOL programming and legacy code maintenance.</li>
+	  <li>Developed an internet based telephone technology (CallPlease).</li>
+	  <li>Managed product investigation, along with development and testing (WAP & WML technologies).</li>
+	  <li>Advised management on product adoption after performing evaluation.</li>
+	  <li>Trained over 40 customers on new technologies and products.</li>
+	</ul>
+  <a href="#intro">Return to the top</a>
+</section>
 
-
-    <!-- Marketing messaging and featurettes
-    ================================================== -->
-    <!-- Wrap the rest of the page in another container to center all the content. -->
-
-    <div class="container marketing">
-      <h1 id="career">CAREER</h1>
-      <!-- Three columns of text below the carousel -->
-      <div class="row">
-        <div class="col-lg-4">
-          <a href="http://anz.com"><img class="img-circle" src="http://mattrobinsoncv.neocities.org/ANZ.jpeg" alt="ANZ" width="140" height="140"></a>
-          <h2>2012 – Present Web Developer<span class="text-muted"> ANZ – Melbourne</span></h2>
-          <p>My current role is a front-end developer in the Online Releases team. I have worked on 
-the ANZ cross device mobile web site and online chat pilot. Presently working on the 
-major CMS upgrade project where my experience in WCM dev is being utilised.</p>
-          <ul>
-            <li>Front-end development – jQuery/jQueryMobile/HTML5/CSS3/XML</li>
-            <li>Mobile web development</li>
-            <li>IBM Websphere (WCM) Content management (CMS) migration</li>
-            <li>Solution prototyping and hand over to offshore teams</li>
-            <li>Liasing and managing issues with 3rd Party vendors (IBM, EditLive, GBST)</li>
-            <li>Technical advise on large platform architecture</li>
-          </ul>
-        </div><!-- /.col-lg-4 -->
-        <div class="col-lg-4">
-          <a href="http://nab.com.au/"><img class="img-circle" src="http://mattrobinsoncv.neocities.org/nab_logo.jpg" alt="NAB logo" width="140" height="140"></a>
-          <h2>2009 – 2012 Web Developer<span class="text-muted"> NAB – Melbourne</span></h2>
-          <p>Technical lead for the Digital Content Team, which created and implemented content 
-for the nab websites. Specifically I developed complex tools and extended functionality 
-using front-end loaded (javascript and CMS specific coding) solutions in a heavy 
-volume, performance sensitive environment. This requires cross team coordination, 
-closely following procedure, creative work arounds, and initiative. Other duties 
-included prototyping and new technology investigation. There is a lot of cross platform 
-and Mobile integration in my work, including leading a small team of developers 
-implementing solutions I’ve devised. I also dabbled in process mapping and improvement 
-as I come across problems.</p>
-          <ul>
-            <li>Front-end development – jQuery/AJAX/HTML5/CSS3</li>
-            <li>Mobile web development & integration</li>
-            <li>Technology update research & advising</li>
-            <li>Delivery management of projects</li>
-            <li>Solution development from business requirements</li>
-            <li>IBM Websphere (WCM) Content management (CMS)</li>
-            <li>Technical Lead (trouble shooting)</li>
-            <li>Wordpress (CMS) customisation of theme templates</li>
-          </ul>
-        </div><!-- /.col-lg-4 -->
-        <div class="col-lg-4">
-          <a href="http://fatfish.com.au/"><img class="img-circle" src="http://mattrobinsoncv.neocities.org/logo-fatfish.png" alt="Fatfish logo" width="140" height="140"></a>
-          <h2>2008 – 2009 Web Developer<span class="text-muted"> Fatfish – Melbourne</span></h2>
-          <ul>
-            <li>End to end website (CMS) development</li>
-            <li>PHP</li>
-            <li>Coldfusion</li>
-            <li>HTML</li>
-            <li>CSS</li>
-            <li>Javascript</li>
-            <li>MySQL</li>
-          </ul>
-        </div><!-- /.col-lg-4 -->
-      </div><!-- /.row -->
-
-
-      <!-- START THE FEATURETTES -->
-      <hr class="featurette-divider">
-
-      <div class="row featurette">
-        <div class="col-md-7">
-          <h2>2006 – 2008   Data Operator – Computershare – Melbourne</h2>
-        	<ul>  
-        	  <li>Part time work to cover the gap in Austudy</li>
-        	</ul>
-        	<h2>2004 – 2006    Various whilst travelling Europe</h2>
-        	<ul>
-        	  <li>Like many young Australians, travelled to London and worked in a pub, using the UK as a base to travel around Europe.  Also spent 3 months working in Greece.  Once the money ran out, returned home to re-skill and get a real job again.</li>
-        	</ul>
-        
-        	<h2>1997 - 2003 Senior Technical Consultant – Mentis Technologies  - Australia</h2>
-        	<ul>
-        	  <li>Started as an IT Trainee in 1997. Promoted to Technical Support leader 6 months after.</li>
-        	  <li>COBOL programming and legacy code maintenance.</li>
-        	  <li>Developed an internet based telephone technology (CallPlease).</li>
-        	  <li>Managed product investigation, along with development and testing (WAP & WML technologies).</li>
-        	  <li>Advised management on product adoption after performing evaluation.</li>
-        	  <li>Trained over 40 customers on new technologies and products.</li>
-        	</ul>        
-        </div>
-      </div>
-      
-      <hr class="featurette-divider">
-
-      <div class="row featurette">
-        <div class="col-md-7">
-          <h1 id="training">TRAINING</h1>
-          <p>I am constantly updating my skills, and have just set up a blog (<a href="http://mattrobinsoncv.wordpress.com">mattrobinsoncv.wordpress.com</a>), 
-to stretch my web development skills and keep up with current techniques. Note that it is a very basic work in progress - all animated GIFs are purely tongue-in-cheek!</p>
-          <ul>
-            <li>2012 WC3 course on Mobile App development</li>
-            <li>2006/7 Web Design and Administration (cert III & IV)</li>
-            <li>2002 Introduction C++ Programming, Open Learning</li>
-            <li>2000 Microsoft CSE 2000</li>
-            <li>1996 Advanced Certificate of Applied Design, RMIT</li>
-            <li>1994 Associate Diploma of Business (Computing)</li>
-            <li>1992 VCE, Girton College</li>
-            <li>1990 O Levels, Uplands International School, Penang (Malaysia)</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- /END THE FEATURETTES -->
-
-
-      <!-- FOOTER -->
-      <footer>
-        <p class="pull-left"><a href="#top">Back to top</a></p>
-      </footer>
-        <p class="pull-left"><a href="http://getbootstrap.com/" target="_blank"><img src="http://mattrobinsoncv.neocities.org/bootstrap.jpg" id="bootstrapLogo" alt="bootstrap logo"></a> Made in a hurry with <a href="http://getbootstrap.com/" target="_blank" id="bootstrapLink">Bootstrap</a></p>
-    </div><!-- /.container -->
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-    
-    <script>
-    $(document).ready(function(){
-      $(function() {  // taken from http://css-tricks.com/snippets/jquery/smooth-scrolling/
-        $('a[href*=#]:not([href=#myCarousel])').click(function() {
-          if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-            var target = $(this.hash);
-            target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-            if (target.length) {
-              $('html,body').animate({
-                scrollTop: target.offset().top
-              }, 1000);
-              return false;
-            }
-          }
-        });
-      });
-    });  
-    </script>
-  </body>
+<section id="education">
+	<h1>Education & Training</h1>
+	 <p>I am constantly updating my skills, and have just set up a blog (<a href="mattrobinsoncv.wordpress.com">mattrobinsoncv.wordpress.com</a>), to stretch my web development skills and keep up with current techniques.  Note that it is a very basic work in progress. I just couldn’t find the appropriate animated GIFs!</p>
+	<ul>
+		<li>2012 WC3 course on Mobile App development</li>
+		<li>2006/7   Web Design and Administration (cert III & IV)</li>
+		<li>2002  Introduction C++ Programming, Open Learning</li>
+		<li>2000 Microsoft CSE 2000</li>
+		<li>1996 Advanced Certificate of Applied Design, RMIT</li>
+		<li>1994 Associate Diploma of Business (Computing)</li>
+		<li>1992 VCE, Girton College</li>
+		<li>1990 O Levels, Uplands International School, Penang (Malaysia)</li>
+	</ul>
+  <a href="#intro">Return to the top</a>
+</section>
+<footer>
+  <!-- ul>
+    <li><a href="http://www.pawsability.com.au" title="A bit of php, javascript and css to bend a wordPress theme">Pawsabilty</a></li>
+    <li><a href="http://www.katefoxart.com/" title="Just some css and a wordPress theme">Kate Fox Art</a></li>
+  </ul -->
+</footer>
+</body>
 </html>
